@@ -1,0 +1,57 @@
+{
+  "openapi":"3.0.1",
+  "info":{"title":"Waste Hunter Service"},
+  "servers":[{"url":"https://wastehunter-backend.azurewebsites.net/","variables":{}}],
+  "security":[{"basicAuth":[]},{"bearerAuth":[]}],
+  "paths":{
+    "/api/event":{
+      "get":{
+        "tags":["event-controller"],
+        "summary":"Gets all events",
+        "operationId":"getEvent",
+        "parameters":[{"name":"status","in":"query","required":false,"schema":{"type":"string","enum":["ONLINE","OFFLINE"]}}],
+        "responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/ChatUserInfo"}}}}}},
+        "security":[{"bearerAuth":[]}]
+      },
+      "post":{
+        "tags":["event-controller"],
+        "summary":"Registers a event",
+        "operationId":"registerEvent",
+        "requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Credentials"}}},"required":true},
+        "responses":{"409":{"description":"User already exists"},"204":{"description":"No Content"}},
+        "security":[{"bearerAuth":[]}]
+      }
+    },
+    "/api/login":{
+      "post":{
+        "tags":["login-controller"],"summary":"Logs in a user and returns an authentication token","operationId":"login","responses":{"200":{"description":"OK","content":{"text/plain":{"schema":{"type":"string"}}}},"401":{"description":"Invalid username or password"}},
+        "security":[{"basicAuth":[]}]
+      }
+    }
+  },  
+  "components":{
+    "schemas":{
+      "Credentials":{
+        "type":"object",
+        "properties":{"username":{"pattern":"\\w{2,}","type":"string"},
+        "password":{"maxLength":2147483647,"minLength":5,"type":"string"}}
+      },
+      "ChatUser":{
+        "type":"object",
+        "properties":{
+          "username":{"type":"string"},
+          "firstName":{"type":"string"},
+          "lastName":{"type":"string"},
+          "email":{"type":"string"},
+          "description":{"type":"string"},
+          "avatar":{"type":"integer","format":"int32"},
+          "status":{"type":"string","readOnly":true,"enum":["ONLINE","OFFLINE"]}
+        }
+      }
+    },  
+    "securitySchemes":{
+      "basicAuth":{"type":"http","scheme":"basic"},
+      "bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}
+    }
+  }
+}
