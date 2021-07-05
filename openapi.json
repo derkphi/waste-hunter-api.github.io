@@ -1,0 +1,93 @@
+{
+  "openapi":"3.0.1",
+  "info":{"title":"Waste Hunter Service"},
+  "servers":[{"url":"https://wastehunter-backend.azurewebsites.net/","variables":{}}],
+  "security":[{"basicAuth":[]},{"bearerAuth":[]}],
+  "paths":{
+    "/api/event":{
+      "get":{
+        "tags":["event-controller"],
+        "summary":"Gets all events",
+        "operationId":"getEvent",
+        "responses":{
+          "200":{
+            "description":"OK",
+            "content":{
+              "application/json":{
+                "schema":{"type":"array","items":{"$ref":"#/components/schemas/EventInfo"}}
+              }
+            }
+          }
+        },
+        "security":[{"bearerAuth":[]}]
+      },
+      "post":{
+        "tags":["event-controller"],
+        "summary":"Registers an event",
+        "operationId":"registerEvent",
+        "requestBody":{
+          "content":{
+            "application/json":{
+              "schema":{"$ref":"#/components/schemas/EventInfo"}
+            }
+          },
+          "required":true
+        },
+        "responses":{
+          "200":{"description":"OK"},
+          "400":{"description":"Location and or time not provided"}
+        },
+        "security":[{"bearerAuth":[]}]
+      }
+    },
+    "/api/login":{
+      "post":{
+        "tags":["login-controller"],
+        "summary":"Logs in a user and returns an authentication token",
+        "operationId":"login",
+        "requestBody":{
+          "content":{
+            "application/json":{
+              "schema":{"$ref":"#/components/schemas/Credentials"}
+            }
+          },
+          "required":true
+        },
+        "responses":{
+          "200":{
+            "description":"OK",
+            "content":{"text/plain":{"schema":{"type":"string"}}}
+          },
+          "400":{
+            "description":"Username and or password not provided"
+          },
+          "401":{
+            "description":"Invalid username or password"
+          }
+        },
+        "security":[{"basicAuth":[]}]
+      }
+    }
+  },  
+  "components":{
+    "schemas":{
+      "Credentials":{
+        "type":"object",
+        "properties":{
+          "username":{"type":"string"},
+          "password":{"type":"string"}
+        }
+      },
+      "EventInfo":{
+        "type":"object",
+        "properties":{
+          "location":{"type":"string"},
+          "time":{"type":"string"}}
+      }
+    },  
+    "securitySchemes":{
+      "basicAuth":{"type":"http","scheme":"basic"},
+      "bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}
+    }
+  }
+}
